@@ -45,7 +45,7 @@ public class LoginController {
             map.put("userInfo", user);
              return Result.success(map);
         } else {
-            return Result.error(500, "用户信息已存在1", null);
+            return Result.error(500, "用户信息已存在uuid", null);
         }
     }
 }
