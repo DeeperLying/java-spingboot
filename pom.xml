@@ -178,6 +178,11 @@
             <version>RELEASE</version>
             <scope>test</scope>
         </dependency>
+        <!-- 邮箱服务 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
     </dependencies>
     <properties>
         <java.version>1.8</java.version>
