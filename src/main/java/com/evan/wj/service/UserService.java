@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
-@CacheConfig(cacheNames = "user")
+@CacheConfig(cacheNames = "user#60")
 @Service
 public class UserService {
     @Autowired
@@ -30,7 +30,7 @@ public class UserService {
     }
 
 
-    @Cacheable(cacheNames = "user", key = "#userName")
+    @Cacheable(cacheNames = "user#60", key = "#userName")
     public User get(String userName, String password) {
         // redisTemplate.opsForValue().set("status:11", "leeCode");
         System.out.print("因为有缓存所以同一组数据只保存一次");
