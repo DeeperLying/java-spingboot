@@ -8,6 +8,7 @@ import com.evan.wj.service.UserService;
 import org.elasticsearch.common.recycler.Recycler;
 import org.hibernate.mapping.Any;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -51,6 +52,19 @@ public class LoginController {
             return Result.success(map);
         } else {
             return Result.error(500, "用户信息已存在1", null);
+        }
+    }
+
+
+    @RequestMapping(value = "/api/info", method = RequestMethod.GET)
+    public Object info(String userName, String password) {
+        Map<String, Object> loginInfo = new HashMap<>();
+        User user =  userService.get(userName, password);
+        if(null == user) {
+            return Result.error(500, "用户名密码不正确", null);
+        } else {
+            loginInfo.put("userInfo", user);
+            return Result.success(loginInfo);
         }
     }
 }
