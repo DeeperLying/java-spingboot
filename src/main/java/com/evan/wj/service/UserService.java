@@ -30,7 +30,7 @@ public class UserService {
     }
 
 
-    @Cacheable(cacheNames = "user#60", key = "#userName")
+    @Cacheable(cacheNames = "user", key = "#userName")
     public User get(String userName, String password) {
         // redisTemplate.opsForValue().set("status:11", "leeCode");
         System.out.print("因为有缓存所以同一组数据只保存一次");

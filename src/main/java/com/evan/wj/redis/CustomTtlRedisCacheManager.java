@@ -16,6 +16,12 @@ import java.util.Map;
  */
 
 public class CustomTtlRedisCacheManager extends RedisCacheManager {
+
+    /**
+     * 默认超时时间
+     */
+    private static final String DEFAULT_TTL = "99999";
+
     public CustomTtlRedisCacheManager(RedisCacheWriter cacheWriter, RedisCacheConfiguration defaultCacheConfiguration) {
         super(cacheWriter, defaultCacheConfiguration);
     }
@@ -42,6 +48,8 @@ public class CustomTtlRedisCacheManager extends RedisCacheManager {
         if (ttl != null) {
             //证明在cacheName上使用了过期时间，需要修改配置中的ttl
             cacheConfig = cacheConfig.entryTtl(ttl);
+        } else {
+            cacheConfig = cacheConfig.entryTtl(Duration.ofSeconds(Long.parseLong(DEFAULT_TTL)));
         }
         //修改缓存key和value值的序列化方式
         cacheConfig = cacheConfig.computePrefixWith(DEFAULT_CACHE_KEY_PREFIX)
