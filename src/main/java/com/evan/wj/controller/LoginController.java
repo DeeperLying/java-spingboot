@@ -2,6 +2,7 @@ package com.evan.wj.controller;
 
 import antlr.collections.impl.LList;
 import com.evan.wj.pojo.User;
+import com.evan.wj.redis.RedisUtils;
 import com.evan.wj.result.Result;
 import com.evan.wj.sendemail.IMailService;
 import com.evan.wj.service.UserService;
@@ -10,6 +11,8 @@ import org.hibernate.mapping.Any;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
@@ -27,6 +30,9 @@ public class LoginController {
     @Autowired
     IMailService imailService;
 
+    @Autowired
+    RedisUtils redisUtils;
+
     @RequestMapping(value = "/api/login", method = RequestMethod.GET)
     public Object login(String userName, String password) {
         Map<String, Object> loginInfo = new HashMap<>();
@@ -39,19 +45,43 @@ public class LoginController {
         }
     }
 
+    // 发送邮件
+    @RequestMapping(value = "/api/email", method = RequestMethod.GET)
+    public Object sendEmail(String email) {
+        System.out.print(email);
+        if (email != null) {
+            String success = imailService.sendSimpleMail(email, "发送邮件测试", "是否成功");
+
+            // String success = "success";
+            if (success == "success") {
+                return Result.success(null);
+            } else {
+                return Result.error(null);
+            }
+        } else {
+            return Result.error(null);
+        }
+    }
+
     @RequestMapping(value = "/api/reg", method = RequestMethod.POST)
     public Object reg(@RequestBody User user) {
         String userName = user.getUserName();
         Map<String, Object> map = new HashMap();
         User userInfo = userService.getByName(userName);
-        if (userInfo == null) {
-            // 存储用户账号密码到数据库
-            userService.add(user);
-            map.put("userInfo", user);
-            imailService.sendSimpleMail("2439175930@qq.com", "发送邮件测试", "是否成功");
-            return Result.success(map);
+        Object code = redisUtils.get("code");
+        System.out.print(user.getCode() + "提交");
+        System.out.print(code + "存储");
+        if (code.equals(user.getCode())) {
+            if (userInfo == null) {
+                // 存储用户账号密码到数据库
+                userService.add(user);
+                map.put("userInfo", user);
+                return Result.success(map);
+            } else {
+                return Result.error(500, "用户信息已存在1", null);
+            }
         } else {
-            return Result.error(500, "用户信息已存在1", null);
+            return Result.error(500, "验证码不正确", null);
         }
     }
 

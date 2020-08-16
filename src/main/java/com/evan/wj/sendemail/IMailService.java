@@ -8,7 +8,7 @@ public interface IMailService {
      * @param subject 主题
      * @param content 内容
      */
-    void sendSimpleMail(String to, String subject, String content);
+    public String sendSimpleMail(String to, String subject, String content);
 
     /**
      * 发送HTML邮件

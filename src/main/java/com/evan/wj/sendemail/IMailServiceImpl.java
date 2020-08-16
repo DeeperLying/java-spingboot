@@ -1,14 +1,21 @@
 package com.evan.wj.sendemail;
 
+import com.evan.wj.utils.EmailCodeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
+import java.util.concurrent.TimeUnit;
 
+@CacheConfig(cacheNames = "email")
 @Service
 public class IMailServiceImpl implements IMailService {
     /**
@@ -23,6 +30,9 @@ public class IMailServiceImpl implements IMailService {
     @Value("${spring.mail.from}")
     private String from;
 
+    @Autowired
+    StringRedisTemplate redisTemplate;
+
     /**
      * 简单文本邮件
      * @param to 收件人
@@ -30,9 +40,11 @@ public class IMailServiceImpl implements IMailService {
      * @param content 内容
      */
     @Override
-    public void sendSimpleMail(String to, String subject, String content) {
+    public String sendSimpleMail(String to, String subject, String content) {
         //创建SimpleMailMessage对象
         SimpleMailMessage message = new SimpleMailMessage();
+        String code = EmailCodeUtils.getNumber();
+        redisTemplate.opsForValue().set("code", code, 120, TimeUnit.SECONDS);
         //邮件发送人
         try {
             message.setFrom(from);
@@ -41,12 +53,13 @@ public class IMailServiceImpl implements IMailService {
             //邮件主题
             message.setSubject(subject);
             //邮件内容
-            message.setText(content);
+            message.setText(content + code);
             //发送邮件
             mailSender.send(message);
             System.out.print("邮件已经发送。");
         } catch (Exception e) {
             System.out.print("发送邮件时发生异常！" + e.toString());
         }
+        return "success";
     }
 }

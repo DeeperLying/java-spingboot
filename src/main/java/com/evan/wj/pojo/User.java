@@ -16,6 +16,17 @@ public class User implements Serializable {
     @Column(name = "username")
     String userName;
     String password;
+    String email;
+    @Transient
+    String code; // code 不需要对应表
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 
     public int getId() {
         return id;
@@ -39,5 +50,12 @@ public class User implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
