@@ -37,6 +37,7 @@ public class LoginController {
     public Object login(String userName, String password) {
         Map<String, Object> loginInfo = new HashMap<>();
         User user =  userService.get(userName, password);
+        System.out.print(user);
         if(null == user) {
             return Result.error(500, "用户名密码不正确", null);
         } else {
