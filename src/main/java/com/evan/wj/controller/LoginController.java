@@ -50,7 +50,7 @@ public class LoginController {
             // 将token放在响应头
             response.setHeader(JwtTokenUtil.AUTH_HEADER_KEY, JwtTokenUtil.TOKEN_PREFIX + token);
             loginInfo.put("userInfo", user);
-            loginInfo.put("token", token);
+            loginInfo.put("token", JwtTokenUtil.TOKEN_PREFIX + token);
             return Result.success(loginInfo);
         }
     }
